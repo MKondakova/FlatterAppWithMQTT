@@ -1,12 +1,5 @@
-import 'package:mqtt_client/mqtt_client.dart';
-import 'package:mqtt_client/mqtt_server_client.dart';
-
-import 'package:flutter/material.dart';
-
-
-class MyApp1 extends StatelessWidget {
-
-  const MyApp1({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
@@ -14,15 +7,6 @@ class MyApp1 extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
@@ -51,8 +35,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   Future<MqttServerClient> connect() async {
     MqttServerClient client =
-    MqttServerClient.withPort('192.168.0.15', 'flutter_client', 1883);
-    client.logging(on: true);
+    MqttServerClient.withPort('192.168.1.77', 'flutter_client', 1883);
     client.onConnected = onConnected;
     client.onDisconnected = onDisconnected;
     client.onSubscribed = onSubscribed;
@@ -60,24 +43,15 @@ class _MyHomePageState extends State<MyHomePage> {
     client.pongCallback = pong;
 
     final connMessage = MqttConnectMessage()
-        .authenticateAs('username', 'password')
         .keepAliveFor(60)
-        .withWillTopic('willtopic')
-        .withWillMessage('Will message')
-        .startClean()
-        .withWillQos(MqttQos.atLeastOnce);
+        .startClean();
     client.connectionMessage = connMessage;
-    print('a');
     try {
       await client.connect();
     } catch (e) {
       print('Exception: $e');
       client.disconnect();
     }
-
-    const topic = "house/bulbs/bulb1";
-    client.subscribe(topic, MqttQos.atMostOnce);
-    print('b');
 
     client.updates?.listen((List<MqttReceivedMessage<MqttMessage>> c) {
       final MqttPublishMessage message = c[0].payload as MqttPublishMessage;
@@ -86,7 +60,23 @@ class _MyHomePageState extends State<MyHomePage> {
 
       print('Received message:$payload from topic: ${c[0].topic}>');
     });
+    final clientBuilder = MqttClientPayloadBuilder();
+    clientBuilder.addString(json.encode(
+        {
+          "username": "alndr03",
+          "password": "23"
+        }));
+    final sensorBuilder = MqttClientPayloadBuilder();
+    sensorBuilder.addString(json.encode(
+        {
+          "title": "sensor1",
+          "guid": "e11bae50-3193-4d85-9fdf-8ff87967f82a"
+        }));
 
+    client.subscribe('client/create/alndr03', MqttQos.atLeastOnce);
+    client.subscribe('sensor/create/e11bae50-3193-4d85-9fdf-8ff87967f82a', MqttQos.atLeastOnce);
+    client.publishMessage('client/create', MqttQos.atLeastOnce, clientBuilder.payload!);
+    client.publishMessage('sensor/create', MqttQos.atLeastOnce, sensorBuilder.payload!);
     return client;
   }
 
@@ -118,19 +108,6 @@ class _MyHomePageState extends State<MyHomePage> {
 // PING response received
   void pong() {
     print('Ping response client callback invoked');
-  }
-
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
   }
 
   @override
@@ -171,7 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
               'You have pushed the button this many times:',
             ),
             Text(
-              '$_counter',
+              'Connect',
               style: Theme.of(context).textTheme.headline4,
             ),
           ],
@@ -184,6 +161,8 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+
+
     );
   }
 }
