@@ -7,10 +7,20 @@ class DeviceMainPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Id: c4fbed52-d362-4185-ba6c-a05af13c4906'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.share),
+              onPressed: () =>
+                  {print("Id: c4fbed52-d362-4185-ba6c-a05af13c4906")},
+              tooltip: 'Share id',
+            ),
+          ],
         ),
-        body: Center(
+        body: Padding(
+          padding: const EdgeInsets.all(10.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextFormField(
                 decoration: const InputDecoration(
@@ -18,6 +28,7 @@ class DeviceMainPage extends StatelessWidget {
                   labelText: 'Value',
                 ),
               ),
+              const SizedBox(height: 10),
               Row(
                 children: [
                   Switch(
@@ -28,6 +39,7 @@ class DeviceMainPage extends StatelessWidget {
                   const Text("Enabled") //TODO add state and change for disabled
                 ],
               ),
+              const SizedBox(height: 10),
               ElevatedButton(
                 child: const Text('Submit'),
                 onPressed: () {},
