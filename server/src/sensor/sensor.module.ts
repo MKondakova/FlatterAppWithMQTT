@@ -1,11 +1,11 @@
 import { CreateSensorService } from './services';
 import { Module } from '@nestjs/common';
-import { MqttModule } from 'src/mqtt';
+import { MqttModule } from '../mqtt';
+import { OrmModule } from '../orm/orm.module';
 import { SensorController } from './controllers';
-import { StorageModule } from 'src/storage';
 
 @Module({
-  imports: [MqttModule, StorageModule],
+  imports: [MqttModule, OrmModule],
   providers: [CreateSensorService],
   controllers: [SensorController],
   exports: [CreateSensorService],

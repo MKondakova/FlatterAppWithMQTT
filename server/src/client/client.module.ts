@@ -1,11 +1,12 @@
+import { Client } from './client.entity';
 import { ClientController } from './controllers';
 import { CreateClientService } from './services';
 import { Module } from '@nestjs/common';
-import { MqttModule } from 'src/mqtt';
-import { StorageModule } from 'src/storage';
+import { MqttModule } from '../mqtt';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [MqttModule, StorageModule],
+  imports: [MqttModule, TypeOrmModule.forFeature([Client])],
   providers: [CreateClientService],
   controllers: [ClientController],
 })
