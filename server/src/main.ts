@@ -18,7 +18,17 @@ async function bootstrap() {
       },
     },
   );
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      enableDebugMessages: true,
+      exceptionFactory: (errors) => {
+        errors.forEach((error) => {
+          console.log(error);
+        });
+      },
+    }),
+  );
   app.listen();
   const aedesServer = aedes.Server();
   ServerRunnerService.AedesServer = aedesServer;

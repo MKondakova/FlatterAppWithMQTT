@@ -1,18 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { PublishMessageService } from 'src/mqtt/service/publish-message.service';
 import { Sensor } from '../sensor.entity';
 import { SensorCreateDto } from '../dto';
-import { StorageHandlerService } from 'src/storage/services';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { PublishMessageService } from '../../mqtt';
 
 @Injectable()
 export class CreateSensorService {
   public constructor(
     private readonly publishMessageService: PublishMessageService,
-    private readonly storageHandlerService: StorageHandlerService,
+    @InjectRepository(Sensor)
+    private clientRepository: Repository<Sensor>,
   ) {}
 
-  public execute(data: SensorCreateDto) {
-    this.storageHandlerService.createSensor(new Sensor(data));
+  public async execute(data: SensorCreateDto) {
+    await this.clientRepository.save(data);
     this.publishMessageService.execute({
       topic: `sensor/create/${data.guid}`,
       payload: data.guid,

@@ -9,7 +9,7 @@ export class ClientController {
     private readonly createClientService: CreateClientService,
   ) {}
   @MessagePattern('client/create')
-  handleSignup(data: ClientCreateDto) {
-    this.createClientService.execute(data);
+  async createClient(data: ClientCreateDto) {
+    await this.createClientService.execute(data);
   }
 }

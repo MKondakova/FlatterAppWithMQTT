@@ -1,8 +1,18 @@
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+
+import { Client } from '../client/client.entity';
+
+@Entity()
 export class Sensor {
-  public title: string;
+  @PrimaryGeneratedColumn()
+  public id: number;
+
+  @Column({ type: 'uuid' })
   public guid: string;
 
-  public constructor(v: Partial<Sensor>) {
-    Object.assign(this, v);
-  }
+  @Column('text')
+  public title: string;
+
+  @ManyToMany(() => Client, (client) => client.sensors)
+  public clients: Client[];
 }

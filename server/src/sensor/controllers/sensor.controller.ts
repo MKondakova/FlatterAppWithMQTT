@@ -9,7 +9,7 @@ export class SensorController {
     private readonly createSensorService: CreateSensorService,
   ) {}
   @MessagePattern('sensor/create')
-  handleSignup(data: SensorCreateDto) {
-    this.createSensorService.execute(data);
+  async createSensor(data: SensorCreateDto) {
+    await this.createSensorService.execute(data);
   }
 }

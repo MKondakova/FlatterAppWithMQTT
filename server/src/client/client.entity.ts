@@ -1,8 +1,25 @@
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+
+import { Sensor } from '../sensor/sensor.entity';
+
+@Entity()
 export class Client {
+  @PrimaryGeneratedColumn()
+  public id: number;
+
+  @Column('text')
   public username: string;
+
+  @Column('text')
   public password: string;
 
-  public constructor(v: Partial<Client>) {
-    Object.assign(this, v);
-  }
+  @ManyToMany(() => Sensor, (sensor) => sensor.clients)
+  @JoinTable()
+  sensors: Sensor[];
 }
