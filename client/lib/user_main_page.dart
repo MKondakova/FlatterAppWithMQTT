@@ -16,37 +16,38 @@ class _DevicesListState extends State<DevicesList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("Devices:"),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.restart_alt_rounded),
-              onPressed: () => {print("updated")},
-              tooltip: 'Saved Suggestions',
-            ),
-          ],
-        ),
-        body: ListView.builder(
-            padding: const EdgeInsets.all(8),
-            itemCount: _devices.length,
-            itemBuilder: (BuildContext context, int index) {
-              var currDevice = _devices[index];
-              return Card(
-                  color: const Color(0xd2f7ebff),
-                  clipBehavior: Clip.antiAlias,
-                  child: ListTile(
-                    title: Text(currDevice.name),
-                    trailing: Text(
-                      currDevice.value,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
+      appBar: AppBar(
+        title: const Text("Devices:"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.restart_alt_rounded),
+            onPressed: () => {print("updated")},
+            tooltip: 'Saved Suggestions',
+          ),
+        ],
+      ),
+      body: ListView.builder(
+          padding: const EdgeInsets.all(8),
+          itemCount: _devices.length,
+          itemBuilder: (BuildContext context, int index) {
+            var currDevice = _devices[index];
+            return Card(
+                color: const Color(0xd2f7ebff),
+                clipBehavior: Clip.antiAlias,
+                child: ListTile(
+                  title: Text(currDevice.name),
+                  trailing: Text(
+                    currDevice.value,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
                         fontSize: 24,
-                          color: currDevice.isEnabled
-                              ? Colors.black
-                              : Colors.black12),
-                    ),
-                  ));
-            }));
+                        color: currDevice.isEnabled
+                            ? Colors.black
+                            : Colors.black12),
+                  ),
+                ));
+          }),
+    );
   }
 }
 

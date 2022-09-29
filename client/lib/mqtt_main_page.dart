@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -42,16 +41,14 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   Future<MqttServerClient> connect() async {
     MqttServerClient client =
-    MqttServerClient.withPort('192.168.1.77', 'flutter_client', 1883);
+        MqttServerClient.withPort('192.168.1.77', 'flutter_client', 1883);
     client.onConnected = onConnected;
     client.onDisconnected = onDisconnected;
     client.onSubscribed = onSubscribed;
     client.onSubscribeFail = onSubscribeFail;
     client.pongCallback = pong;
 
-    final connMessage = MqttConnectMessage()
-        .keepAliveFor(60)
-        .startClean();
+    final connMessage = MqttConnectMessage().keepAliveFor(60).startClean();
     client.connectionMessage = connMessage;
     try {
       await client.connect();
@@ -63,27 +60,24 @@ class _MyHomePageState extends State<MyHomePage> {
     client.updates?.listen((List<MqttReceivedMessage<MqttMessage>> c) {
       final MqttPublishMessage message = c[0].payload as MqttPublishMessage;
       final payload =
-      MqttPublishPayload.bytesToStringAsString(message.payload.message);
+          MqttPublishPayload.bytesToStringAsString(message.payload.message);
 
       print('Received message:$payload from topic: ${c[0].topic}>');
     });
     final clientBuilder = MqttClientPayloadBuilder();
-    clientBuilder.addString(json.encode(
-        {
-          "username": "alndr03",
-          "password": "23"
-        }));
+    clientBuilder
+        .addString(json.encode({"username": "alndr03", "password": "23"}));
     final sensorBuilder = MqttClientPayloadBuilder();
     sensorBuilder.addString(json.encode(
-        {
-          "title": "sensor1",
-          "guid": "e11bae50-3193-4d85-9fdf-8ff87967f82a"
-        }));
+        {"title": "sensor1", "guid": "e11bae50-3193-4d85-9fdf-8ff87967f82a"}));
 
     client.subscribe('client/create/alndr03', MqttQos.atLeastOnce);
-    client.subscribe('sensor/create/e11bae50-3193-4d85-9fdf-8ff87967f82a', MqttQos.atLeastOnce);
-    client.publishMessage('client/create', MqttQos.atLeastOnce, clientBuilder.payload!);
-    client.publishMessage('sensor/create', MqttQos.atLeastOnce, sensorBuilder.payload!);
+    client.subscribe('sensor/create/e11bae50-3193-4d85-9fdf-8ff87967f82a',
+        MqttQos.atLeastOnce);
+    client.publishMessage(
+        'client/create', MqttQos.atLeastOnce, clientBuilder.payload!);
+    client.publishMessage(
+        'sensor/create', MqttQos.atLeastOnce, sensorBuilder.payload!);
     return client;
   }
 
@@ -168,8 +162,6 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
-
-
     );
   }
 }

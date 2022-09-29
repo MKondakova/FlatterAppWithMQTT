@@ -1,5 +1,3 @@
-import 'package:client/device_main_page.dart';
-import 'package:client/login_page.dart';
 import 'package:flutter/material.dart';
 
 class ConnectDevicePage extends StatelessWidget {
@@ -14,8 +12,7 @@ class ConnectDevicePage extends StatelessWidget {
               Center(
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => const DeviceMainPage()));
+                    Navigator.pushNamed(context, '/device');
                   },
                   child: const Text('Connect'),
                 ),
@@ -24,8 +21,7 @@ class ConnectDevicePage extends StatelessWidget {
                 alignment: Alignment.bottomCenter,
                 child: TextButton(
                   onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => const LoginPage()));
+                    Navigator.pushNamed(context, '/login');
                   },
                   child: const Text(
                     'Connect as user',

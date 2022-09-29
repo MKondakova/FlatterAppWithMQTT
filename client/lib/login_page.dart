@@ -1,8 +1,5 @@
-import 'package:client/registration_page.dart';
-import 'package:client/user_main_page.dart';
 import 'package:flutter/material.dart';
-
-import 'connect_device_page.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -11,11 +8,9 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: _title,
-      home: Scaffold(
-        body: LoginPageWidget(),
-      ),
+    return Scaffold(
+      appBar: AppBar(title: const Text(_title)),
+      body: const LoginPageWidget(),
     );
   }
 }
@@ -28,8 +23,41 @@ class LoginPageWidget extends StatefulWidget {
 }
 
 class _LoginPageWidgetState extends State<LoginPageWidget> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormBuilderState>();
+
+  final _loginController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  final mockCredentials = {'login': 'user', 'password': 'password'};
+
+  final snackBar = SnackBar(
+    content: const Text('Incorrect Credentials!'),
+    action: SnackBarAction(
+      label: 'Close',
+      onPressed: () {
+        // Some code to undo the change.
+      },
+    ),
+  );
+
+  void _validateForm() {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState?.save();
+
+      if (_formKey.currentState!.fields['login']?.value ==
+              mockCredentials['login'] &&
+          _formKey.currentState!.fields['password']?.value ==
+              mockCredentials['password']) {
+        Navigator.pushNamed(context, '/devices-list');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    }
+  }
+
+  var isLoginIconVisible = false;
+  var isPasswordIconVisible = false;
+  var isPasswordAgainIconVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -38,78 +66,114 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
         child: Column(children: <Widget>[
           Container(
               alignment: Alignment.centerLeft,
-              padding:
-                  const EdgeInsets.symmetric(vertical: 120.0, horizontal: 30.0),
+              margin:
+                  const EdgeInsets.symmetric(vertical: 80.0, horizontal: 30.0),
               child: const Text(
                 'Welcome!',
                 style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.w500,
-                    fontSize: 30),
+                    fontSize: 34),
               )),
+          FormBuilder(
+              key: _formKey,
+              child: Column(children: <Widget>[
+                Container(
+                  margin: const EdgeInsets.all(6),
+                  child: FormBuilderTextField(
+                    name: 'login',
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Enter login';
+                      }
+                      return null;
+                    },
+                    controller: _loginController,
+                    onChanged: (word) {
+                      setState(() {
+                        isLoginIconVisible = (word ?? '').isNotEmpty;
+                      });
+                      _formKey.currentState!.fields['login']?.validate();
+                    },
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: 'Login',
+                      suffixIcon: isLoginIconVisible
+                          ? IconButton(
+                              icon: const Icon(Icons.cancel_outlined),
+                              onPressed: _loginController.clear,
+                            )
+                          : null,
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.all(6),
+                  child: FormBuilderTextField(
+                    name: 'password',
+                    obscureText: true,
+                    validator: (value) {
+                      if (value == null || value.isEmpty || value.length < 8) {
+                        return 'Password must contains at least 8 symbols';
+                      }
+                      return null;
+                    },
+                    controller: _passwordController,
+                    onChanged: (word) {
+                      setState(() {
+                        isPasswordIconVisible = (word ?? '').isNotEmpty;
+                      });
+                      _formKey.currentState!.fields['password']?.validate();
+                    },
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: 'Password',
+                      suffixIcon: isPasswordIconVisible
+                          ? IconButton(
+                              icon: const Icon(Icons.cancel_outlined),
+                              onPressed: _passwordController.clear,
+                            )
+                          : null,
+                    ),
+                  ),
+                ),
+                Container(
+                    width: double.infinity,
+                    height: 50,
+                    margin: const EdgeInsets.all(6),
+                    child: ElevatedButton(
+                      child: const Text(
+                        'Log In',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500, fontSize: 18),
+                      ),
+                      onPressed: _validateForm,
+                    ))
+              ])),
           Container(
-            padding: const EdgeInsets.all(10),
-            child: TextField(
-              controller: nameController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Login',
-              ),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.fromLTRB(10, 10, 10, 20),
-            child: TextField(
-              obscureText: true,
-              controller: passwordController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Password',
-              ),
-            ),
-          ),
-          Container(
+              width: double.infinity,
               height: 50,
-              padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+              margin: const EdgeInsets.all(6),
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(15)),
-                child: const Text('Login'),
+                child: const Text(
+                  'Create Account',
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
+                ),
                 onPressed: () {
-                  print(nameController.text);
-                  print(passwordController.text);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const DevicesList()),
-                  );
-                },
-              )),
-          Container(
-              height: 50,
-              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(15)),
-                child: const Text('Create account'),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const SignupPage()),
-                  );
+                  Navigator.pushNamed(context, '/sign-up');
                 },
               )),
           Expanded(
             child: Container(
               alignment: Alignment.bottomCenter,
-              padding: const EdgeInsets.only(bottom: 15),
+              margin: const EdgeInsets.only(bottom: 15),
               child: TextButton(
-                onPressed: () { Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ConnectDevicePage())); },
+                onPressed: () {
+                  Navigator.pushNamed(context, '/device-connect');
+                },
                 child: const Text(
                   'Connect as device',
-                  style: TextStyle(color: Colors.deepPurpleAccent),
+                  style: TextStyle(color: Colors.blueAccent),
                 ),
               ),
             ),
