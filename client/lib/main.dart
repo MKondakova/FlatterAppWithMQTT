@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'add_device_page.dart';
 import 'connect_device_page.dart';
 import 'device_main_page.dart';
 import 'login_page.dart';
@@ -22,6 +23,7 @@ void main() {
         '/devices-list': (context) => const DevicesList(),
         '/device-connect': (context) => const ConnectDevicePage(),
         '/device': (context) => const DeviceMainPage(),
+        '/add-device': (context) => const AddDevicePage(),
       },
     ),
   );

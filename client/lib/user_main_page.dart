@@ -16,38 +16,64 @@ class _DevicesListState extends State<DevicesList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Devices:"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.restart_alt_rounded),
-            onPressed: () => {print("updated")},
-            tooltip: 'Saved Suggestions',
+        appBar: AppBar(
+          title: const Text("Devices:"),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.restart_alt_rounded),
+              onPressed: () => {print("updated")},
+              tooltip: 'Saved Suggestions',
+            ),
+          ],
+        ),
+        body: Container(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+            children: [
+              for (var item in _devices)
+                Card(
+                    color: const Color(0xd2f7ebff),
+                    clipBehavior: Clip.antiAlias,
+                    child: ListTile(
+                      title: Text(item.name),
+                      trailing: Text(
+                        item.value,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 24,
+                            color:
+                                item.isEnabled ? Colors.black : Colors.black12),
+                      ),
+                    )),
+              Expanded(
+                  child: Stack(
+                alignment: Alignment.bottomRight,
+                children: [
+                  Positioned(
+                    right: 0,
+                    width: 80,
+                    height: 80,
+                    child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/add-device');
+                        },
+                        child: const Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 44.0,
+                          semanticLabel: 'Add Device',
+                        ),
+                        style: ButtonStyle(
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(100.0),
+                        )))),
+                  )
+                ],
+              ))
+            ],
           ),
-        ],
-      ),
-      body: ListView.builder(
-          padding: const EdgeInsets.all(8),
-          itemCount: _devices.length,
-          itemBuilder: (BuildContext context, int index) {
-            var currDevice = _devices[index];
-            return Card(
-                color: const Color(0xd2f7ebff),
-                clipBehavior: Clip.antiAlias,
-                child: ListTile(
-                  title: Text(currDevice.name),
-                  trailing: Text(
-                    currDevice.value,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 24,
-                        color: currDevice.isEnabled
-                            ? Colors.black
-                            : Colors.black12),
-                  ),
-                ));
-          }),
-    );
+        ));
   }
 }
 

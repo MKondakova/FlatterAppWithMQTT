@@ -91,7 +91,7 @@ class _SignupPageWidgetState extends State<SignupPageWidget> {
                       setState(() {
                         isLoginIconVisible = (word ?? '').isNotEmpty;
                       });
-                      _formKey.currentState!.validate();
+                      _formKey.currentState!.fields['login']?.validate();
                     },
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
@@ -121,7 +121,7 @@ class _SignupPageWidgetState extends State<SignupPageWidget> {
                       setState(() {
                         isPasswordIconVisible = (word ?? '').isNotEmpty;
                       });
-                      _formKey.currentState!.validate();
+                      _formKey.currentState!.fields['password']?.validate();
                     },
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
@@ -145,7 +145,8 @@ class _SignupPageWidgetState extends State<SignupPageWidget> {
                       setState(() {
                         isPasswordAgainIconVisible = (word ?? '').isNotEmpty;
                       });
-                      _formKey.currentState!.validate();
+                      _formKey.currentState!.fields['passwordAgain']
+                          ?.validate();
                     },
                     validator: (value) {
                       if (value == null || value.isEmpty || value.length < 8) {
