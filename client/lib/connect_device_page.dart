@@ -24,8 +24,7 @@ class ConnectDevicePage extends StatelessWidget {
                     Navigator.pushNamed(context, '/login');
                   },
                   child: const Text(
-                    'Connect as user',
-                    style: TextStyle(color: Colors.deepPurpleAccent),
+                    'Connect as user'
                   ),
                 ),
               )

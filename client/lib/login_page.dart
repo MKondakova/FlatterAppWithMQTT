@@ -172,8 +172,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                   Navigator.pushNamed(context, '/device-connect');
                 },
                 child: const Text(
-                  'Connect as device',
-                  style: TextStyle(color: Colors.blueAccent),
+                  'Connect as device'
                 ),
               ),
             ),

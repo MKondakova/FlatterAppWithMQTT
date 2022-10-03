@@ -13,12 +13,14 @@ void main() {
       title: 'Named Routes Demo',
       // Start the app with the "/" named route. In this case, the app starts
       // on the FirstScreen widget.
+      theme: ThemeData(
+        primarySwatch: Colors.deepPurple,
+      ),
       initialRoute: '/',
       routes: {
         // When navigating to the "/" route, build the FirstScreen widget.
         '/': (context) => const LoginPage(),
         '/login': (context) => const LoginPage(),
-        // When navigating to the "/second" route, build the SecondScreen widget.
         '/sign-up': (context) => const SignupPage(),
         '/devices-list': (context) => const DevicesList(),
         '/device-connect': (context) => const ConnectDevicePage(),
