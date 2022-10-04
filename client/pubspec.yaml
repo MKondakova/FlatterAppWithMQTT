@@ -38,6 +38,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   mqtt_client: ^9.7.2
   flutter_form_builder: ^7.6.0
+  shared_preferences: ^2.0.15
+  uuid: ^3.0.6
 
 dev_dependencies:
   flutter_test:

@@ -171,12 +171,12 @@ class _SignupPageWidgetState extends State<SignupPageWidget> {
                     height: 50,
                     margin: const EdgeInsets.all(10),
                     child: ElevatedButton(
+                      onPressed: _validateForm,
                       child: const Text(
                         'Sign Up',
                         style: TextStyle(
                             fontWeight: FontWeight.w500, fontSize: 18),
                       ),
-                      onPressed: _validateForm,
                     )),
               ],
             ),

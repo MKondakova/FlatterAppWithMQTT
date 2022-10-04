@@ -11,7 +11,7 @@ class DeviceMainPage extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.share),
               onPressed: () =>
-                  {print("Id: c4fbed52-d362-4185-ba6c-a05af13c4906")},
+                  { print("Id: c4fbed52-d362-4185-ba6c-a05af13c4906") },
               tooltip: 'Share id',
             ),
           ],

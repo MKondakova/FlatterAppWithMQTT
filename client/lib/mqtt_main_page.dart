@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
@@ -48,12 +49,14 @@ class _MyHomePageState extends State<MyHomePage> {
     client.onSubscribeFail = onSubscribeFail;
     client.pongCallback = pong;
 
-    final connMessage = MqttConnectMessage().keepAliveFor(60).startClean();
+    final connMessage = MqttConnectMessage().startClean();
     client.connectionMessage = connMessage;
     try {
       await client.connect();
     } catch (e) {
-      print('Exception: $e');
+      if (kDebugMode) {
+        print('Exception: $e');
+      }
       client.disconnect();
     }
 
@@ -62,7 +65,9 @@ class _MyHomePageState extends State<MyHomePage> {
       final payload =
           MqttPublishPayload.bytesToStringAsString(message.payload.message);
 
-      print('Received message:$payload from topic: ${c[0].topic}>');
+      if (kDebugMode) {
+        print('Received message:$payload from topic: ${c[0].topic}>');
+      }
     });
     final clientBuilder = MqttClientPayloadBuilder();
     clientBuilder
@@ -83,32 +88,44 @@ class _MyHomePageState extends State<MyHomePage> {
 
 // connection succeeded
   void onConnected() {
-    print('Connected');
+    if (kDebugMode) {
+      print('Connected');
+    }
   }
 
 // unconnected
   void onDisconnected() {
-    print('Disconnected');
+    if (kDebugMode) {
+      print('Disconnected');
+    }
   }
 
 // subscribe to topic succeeded
   void onSubscribed(String topic) {
-    print('Subscribed topic: $topic');
+    if (kDebugMode) {
+      print('Subscribed topic: $topic');
+    }
   }
 
 // subscribe to topic failed
   void onSubscribeFail(String topic) {
-    print('Failed to subscribe $topic');
+    if (kDebugMode) {
+      print('Failed to subscribe $topic');
+    }
   }
 
 // unsubscribe succeeded
   void onUnsubscribed(String topic) {
-    print('Unsubscribed topic: $topic');
+    if (kDebugMode) {
+      print('Unsubscribed topic: $topic');
+    }
   }
 
 // PING response received
   void pong() {
-    print('Ping response client callback invoked');
+    if (kDebugMode) {
+      print('Ping response client callback invoked');
+    }
   }
 
   @override
