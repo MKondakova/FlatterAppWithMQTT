@@ -16,7 +16,7 @@ export class Sensor {
   @Column('text', {
     default: ''
   })
-  public data: string;
+  public state: string;
 
   @ManyToMany(() => Client, (client) => client.sensors)
   public clients: Client[];

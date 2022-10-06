@@ -1,15 +1,22 @@
+import { CreateSensorService, UpdateSensorStateService } from '../services';
+import { SensorCreateDto, SensorUpdateDto } from '../dto';
+
 import { Controller } from '@nestjs/common';
-import { CreateSensorService } from '../services';
 import { MessagePattern } from '@nestjs/microservices';
-import { SensorCreateDto } from '../dto';
 
 @Controller('')
 export class SensorController {
   public constructor(
     private readonly createSensorService: CreateSensorService,
+    private readonly updateSensorService: UpdateSensorStateService,
   ) {}
   @MessagePattern('sensor/create')
   async createSensor(data: SensorCreateDto) {
     await this.createSensorService.execute(data);
+  }
+
+  @MessagePattern('sensor')
+  async updateSensor(data: SensorUpdateDto) {
+    await this.updateSensorService.execute(data);
   }
 }
