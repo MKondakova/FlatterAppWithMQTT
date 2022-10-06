@@ -16,7 +16,7 @@ export class UpdateSensorStateService {
   public async execute(data: SensorUpdateDto) {
     const sensor = await this.sensorRepository.findOne({
          where: {guid: data.guid},
-         relations: ['clients']
+         relations: ['subscriptions', 'subscriptions.client']
         });
    
     await this.sensorRepository.save({
@@ -24,7 +24,10 @@ export class UpdateSensorStateService {
         state: data.state
     });
 
-     sensor.clients.forEach(c => this.publishMessageService.execute({topic: `client/${c.username}`, payload: JSON.stringify(data)}))
+    console.log(sensor);
+    
+
+     sensor.subscriptions.forEach(s => this.publishMessageService.execute({topic: `client/${s.client.username}`, payload: JSON.stringify(data)}))
      this.publishMessageService.execute({topic: `sensor/${sensor.guid}`, payload: JSON.stringify(data)})
      
   }

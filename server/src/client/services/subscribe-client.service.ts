@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PublishMessageService } from '../../mqtt';
 import { Sensor } from '@/sensor/sensor.entity';
 import { ClientSubscribeDto } from '../dto/client-subscribe.dto';
+import { Subscription } from '@/subscription';
 
 @Injectable()
 export class SubscribeClientService {
@@ -14,6 +15,8 @@ export class SubscribeClientService {
     private clientRepository: Repository<Client>,
     @InjectRepository(Sensor)
     private sensorRepository: Repository<Sensor>,
+    @InjectRepository(Subscription)
+    private subscriptionRepository: Repository<Subscription>,
   ) { }
 
   public async execute(data: ClientSubscribeDto) {
@@ -21,7 +24,7 @@ export class SubscribeClientService {
       where: {
         username: data.username
       },
-      relations: ['sensors']
+      relations: ['subscriptions', 'subscriptions.sensor']
     });
     const sensor = await this.sensorRepository.findOne({ guid: data.sensorGuid });
 
@@ -32,10 +35,11 @@ export class SubscribeClientService {
       });
       throw new Error('Client or sensor not found')
     }
-    if (!client.sensors?.find(s => s.guid === sensor.guid)) {
-      await this.clientRepository.save({
-        ...client,
-        sensors: [...(client.sensors ?? []), sensor]
+    if (!client.subscriptions?.find(s => s.sensor.guid === sensor.guid)) {
+      await this.subscriptionRepository.save({
+        client,
+        sensor,
+        title: data.title,
       });
     }
     this.publishMessageService.execute({

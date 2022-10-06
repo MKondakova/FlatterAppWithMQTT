@@ -1,6 +1,6 @@
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-import { Client } from '../client/client.entity';
+import { Subscription } from '@/subscription/subscription.entity';
 
 @Entity()
 export class Sensor {
@@ -10,14 +10,11 @@ export class Sensor {
   @Column({ type: 'uuid' })
   public guid: string;
 
-  @Column('text')
-  public title: string;
-
   @Column('text', {
     default: ''
   })
   public state: string;
 
-  @ManyToMany(() => Client, (client) => client.sensors)
-  public clients: Client[];
+  @OneToMany(() => Subscription, (subscription) => subscription.sensor)
+  subscriptions: Subscription[];
 }

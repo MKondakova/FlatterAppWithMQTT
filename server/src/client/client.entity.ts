@@ -1,12 +1,11 @@
 import {
   Column,
   Entity,
-  JoinTable,
-  ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { Sensor } from '../sensor/sensor.entity';
+import { Subscription } from '@/subscription/subscription.entity';
 
 @Entity()
 export class Client {
@@ -19,7 +18,6 @@ export class Client {
   @Column('text')
   public password: string;
 
-  @ManyToMany(() => Sensor, (sensor) => sensor.clients)
-  @JoinTable()
-  sensors: Sensor[];
+  @OneToMany(() => Subscription, (subscription) => subscription.client)
+  subscriptions: Subscription[];
 }

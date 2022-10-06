@@ -8,4 +8,7 @@ export class ClientSubscribeDto {
 
   @IsUUID()
   public readonly sensorGuid: string;
+
+  @IsString()
+  public readonly title: string
 }

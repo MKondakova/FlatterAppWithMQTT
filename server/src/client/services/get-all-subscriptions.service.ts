@@ -18,7 +18,7 @@ export class GetAllSubscriptionsService {
       where: {
         username: data.username
       },
-      relations: ['sensors']
+      relations: ['subscriptions', 'subscriptions.sensor']
     });
   
 
@@ -32,7 +32,7 @@ export class GetAllSubscriptionsService {
 
     this.publishMessageService.execute({
       topic: `client/subscriptions/${data.username}`,
-      payload: JSON.stringify(client.sensors.map(s => ({title: 'title', sensor: s}))),
+      payload: JSON.stringify(client.subscriptions.map(s => ({title: s.title, sensor: s.sensor}))),
     });
   }
 }
