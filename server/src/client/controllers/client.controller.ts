@@ -1,14 +1,15 @@
-import { CreateClientService, LoginClientService, SubscribeClientService } from '../services';
+import { ClientCreateDto, ClientSubscribeDto } from '../dto';
+import { CreateClientService, GetAllSubscriptionsService, LoginClientService, SubscribeClientService } from '../services';
 
-import { ClientCreateDto } from '../dto';
-import { ClientSubscribeDto } from '../dto/client-subscribe.dto';
 import { Controller } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
+import { SubscriptionsFilterDto } from '../dto/subscriptions-filter.dto';
 
 @Controller('')
 export class ClientController {
   public constructor(
     private readonly createClientService: CreateClientService,
+    private readonly getClientSubscriptionsService: GetAllSubscriptionsService,
     private readonly loginClientService: LoginClientService,
     private readonly subscribeClientService: SubscribeClientService,
   ) {}
@@ -25,5 +26,10 @@ export class ClientController {
   @MessagePattern('client/subscribe')
   async subscribeClient(data: ClientSubscribeDto) {
     await this.subscribeClientService.execute(data);
+  }
+
+  @MessagePattern('client/subscriptions')
+  async getClientSubscriptions(data: SubscriptionsFilterDto) {
+    await this.getClientSubscriptionsService.execute(data);
   }
 }

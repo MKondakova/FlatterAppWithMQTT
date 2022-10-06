@@ -1,4 +1,4 @@
-import { CreateClientService, LoginClientService, SubscribeClientService } from './services';
+import { CreateClientService, GetAllSubscriptionsService, LoginClientService, SubscribeClientService } from './services';
 
 import { Client } from './client.entity';
 import { ClientController } from './controllers';
@@ -9,7 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [MqttModule, TypeOrmModule.forFeature([Client]), TypeOrmModule.forFeature([Sensor])],
-  providers: [CreateClientService, LoginClientService, SubscribeClientService],
+  providers: [CreateClientService, GetAllSubscriptionsService, LoginClientService, SubscribeClientService],
   controllers: [ClientController],
 })
 export class ClientModule {}
