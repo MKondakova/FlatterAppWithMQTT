@@ -1,3 +1,4 @@
+import 'package:client/mqtt_client_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 
@@ -43,10 +44,12 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
     ),
   );
 
-  void _validateForm() {
+  Future<void> _validateForm() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState?.save();
 
+      MQTTClientManager m = MQTTClientManager();
+      await m.connect();
       if (_formKey.currentState!.fields['login']?.value ==
               mockCredentials['login'] &&
           _formKey.currentState!.fields['password']?.value ==

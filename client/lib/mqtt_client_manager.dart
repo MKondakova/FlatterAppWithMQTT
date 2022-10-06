@@ -1,28 +1,24 @@
 import 'dart:convert';
+import 'dart:developer' as L;
+import 'dart:io';
+import 'dart:math';
 
+import 'package:client/models.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
-/*
-* Необходимо чтобы
-* для клиента: состояние датчиков обновлялось при соотв. сообщении
-* для датчика: состояние собственное обновлялось при соотв. сообщении
-*
-* каждая подписка вообще возвращает Subscription, у которого есть отдельный
-* changes, надо работать с ней
-*
-* https://docs.flutter.dev/development/data-and-backend/state-mgmt/simple
-*
-* */
 
 class MQTTClientManager {
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  MqttServerClient client =
-      MqttServerClient.withPort('10.0.2.2', 'mobile_client', 1883);
+  MqttServerClient client = MqttServerClient.withPort(
+      '192.168.0.14', 'mobile_client${Random().nextInt(1000)}', 1883);
+
   final clientBuilder = MqttClientPayloadBuilder();
+  UserData? userData;
+  DeviceData? deviceData;
 
   Future<int> connect() async {
     client.logging(on: true);
@@ -35,14 +31,44 @@ class MQTTClientManager {
     final connMessage = MqttConnectMessage().startClean();
     client.connectionMessage = connMessage;
 
+    L.log('MQTT :: Connecting...');
     try {
       await client.connect();
     } on NoConnectionException catch (e) {
-      if (kDebugMode) {
-        print('MQTTClient::Client exception - $e');
-      }
+      L.log('MQTT :: client exception - $e');
+      client.disconnect();
+    } on SocketException catch (e) {
+      L.log('MQTT :: socket exception - $e');
       client.disconnect();
     }
+    L.log('MQTT :: Connected...');
+    client.updates!.listen((List<MqttReceivedMessage<MqttMessage>> c) {
+      for (MqttReceivedMessage m in c) {
+        L.log("New message from topic : ${m.topic}");
+        final payload = m.payload as MqttPublishMessage;
+        final content =
+            MqttPublishPayload.bytesToStringAsString(payload.payload.message);
+
+        if (m.topic == 'client/create/${userData?.userName}') {
+          //todo check what message
+          userData!.successLogin();
+        }
+
+        if (m.topic == 'sensor/create/${deviceData?.data!.id}') {
+          changeState(deviceData!.data!.value);
+        }
+
+        if (m.topic == 'sensor/${deviceData?.data!.id}') {
+          Map<String, dynamic> data = jsonDecode(content);
+          deviceData!.setValue(data['state']);
+        }
+
+        if (m.topic == 'client/${userData?.userName}') {
+          Map<String, dynamic> data = jsonDecode(content);
+          userData!.updateValue(data['guid'], data['state']);
+        }
+      }
+    });
 
     return 0;
   }
@@ -91,8 +117,9 @@ class MQTTClientManager {
     if (resultSubscription == null) {
       throw Exception('Something went wrong with subscription');
     }
+    userData!.silentSetName(login);
+    userData!.startLogining();
     publishMessage('client/create', MqttQos.atLeastOnce, message);
-    //todo ожидание правильного ответа как-то через future?
   }
 
   Future<void> registerDevice() async {
@@ -102,17 +129,15 @@ class MQTTClientManager {
       uuid = const Uuid().v4();
       prefs.setString('uuid', uuid);
     }
-    String message = json.encode({"guid": uuid, "title": 'todo'});
+    deviceData!.silentSetId(uuid);
+    String message = json.encode(
+        {"guid": deviceData!.data!.id, "title": deviceData!.data!.name});
 
     Subscription? resultSubscription = subscribe('sensor/create/$uuid');
     if (resultSubscription == null) {
       throw Exception('Something went wrong with subscription');
     }
     publishMessage('sensor/create', MqttQos.atLeastOnce, message);
-    //todo ожидание правильного ответа как-то через future?
-
-    // если все норм то подписываемся на наш топик с данными и публикуем что-то
-    // дефолтное
   }
 
   // to device

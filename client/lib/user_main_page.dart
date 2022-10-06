@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'models.dart';
+
 class DevicesList extends StatefulWidget {
   const DevicesList({super.key});
 
@@ -61,13 +63,4 @@ class _DevicesListState extends State<DevicesList> {
           ),)
     );
   }
-}
-
-class Device {
-  String name;
-  String id;
-  String value;
-  bool isEnabled;
-
-  Device(this.name, this.id, this.value, this.isEnabled);
 }
