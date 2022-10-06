@@ -1,5 +1,10 @@
 import { ClientCreateDto, ClientSubscribeDto } from '../dto';
-import { CreateClientService, GetAllSubscriptionsService, LoginClientService, SubscribeClientService } from '../services';
+import {
+  CreateClientService,
+  GetAllSubscriptionsService,
+  LoginClientService,
+  SubscribeClientService,
+} from '../services';
 
 import { Controller } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';

@@ -1,4 +1,4 @@
-  import { Client } from '../client.entity';
+import { Client } from '../client.entity';
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -11,28 +11,29 @@ export class GetAllSubscriptionsService {
     private readonly publishMessageService: PublishMessageService,
     @InjectRepository(Client)
     private clientRepository: Repository<Client>,
-  ) { }
+  ) {}
 
   public async execute(data: SubscriptionsFilterDto) {
     const client = await this.clientRepository.findOne({
       where: {
-        username: data.username
+        username: data.username,
       },
-      relations: ['subscriptions', 'subscriptions.sensor']
+      relations: ['subscriptions', 'subscriptions.sensor'],
     });
-  
 
     if (!client) {
       this.publishMessageService.execute({
         topic: `client/subscriptions/${data.username}`,
         payload: 'failed',
       });
-      throw new Error('Client not found')
+      throw new Error('Client not found');
     }
 
     this.publishMessageService.execute({
       topic: `client/subscriptions/${data.username}`,
-      payload: JSON.stringify(client.subscriptions.map(s => ({title: s.title, sensor: s.sensor}))),
+      payload: JSON.stringify(
+        client.subscriptions.map((s) => ({ title: s.title, sensor: s.sensor })),
+      ),
     });
   }
 }

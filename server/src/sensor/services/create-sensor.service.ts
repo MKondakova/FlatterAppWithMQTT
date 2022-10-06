@@ -14,13 +14,15 @@ export class CreateSensorService {
   ) {}
 
   public async execute(data: SensorCreateDto) {
-    const existingSensor = await this.sensorRepository.findOne({'guid': data.guid});
+    const existingSensor = await this.sensorRepository.findOne({
+      guid: data.guid,
+    });
     if (existingSensor) {
       this.publishMessageService.execute({
         topic: `sensor/create/${data.guid}`,
         payload: 'success',
       });
-      throw new Error('Sensor exists')
+      throw new Error('Sensor exists');
     }
     await this.sensorRepository.save(data);
     this.publishMessageService.execute({

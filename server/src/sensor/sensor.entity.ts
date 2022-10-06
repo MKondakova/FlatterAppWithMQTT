@@ -1,4 +1,9 @@
-import { Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import { Subscription } from '@/subscription/subscription.entity';
 
@@ -11,7 +16,7 @@ export class Sensor {
   public guid: string;
 
   @Column('text', {
-    default: ''
+    default: '',
   })
   public state: string;
 

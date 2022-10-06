@@ -20,7 +20,7 @@ export class LoginClientService {
         topic: `client/login/${data.username}`,
         payload: 'failed',
       });
-      throw new Error('Password incorrect or no client with such credentials')
+      throw new Error('Password incorrect or no client with such credentials');
     }
     this.publishMessageService.execute({
       topic: `client/login/${data.username}`,

@@ -10,5 +10,5 @@ export class ClientSubscribeDto {
   public readonly sensorGuid: string;
 
   @IsString()
-  public readonly title: string
+  public readonly title: string;
 }

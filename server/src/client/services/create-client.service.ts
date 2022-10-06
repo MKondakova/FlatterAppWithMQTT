@@ -14,13 +14,15 @@ export class CreateClientService {
   ) {}
 
   public async execute(data: ClientCreateDto) {
-    const existingUser = await this.clientRepository.findOne({'username': data.username});
+    const existingUser = await this.clientRepository.findOne({
+      username: data.username,
+    });
     if (existingUser) {
       this.publishMessageService.execute({
         topic: `client/create/${data.username}`,
         payload: 'failed',
       });
-      throw new Error('Client exists')
+      throw new Error('Client exists');
     }
     await this.clientRepository.save(data);
     this.publishMessageService.execute({
