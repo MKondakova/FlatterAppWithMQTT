@@ -3,23 +3,37 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 
 class DeviceData extends ChangeNotifier {
-  Device? data;
+  Device data = Device('', 'id', 'value');
+  int isLoggedIn =
+      0; //0 - now inactive; 1 - in process; 2 - success; 3 - failure;
 
   void setValue(String newValue) {
-    if (data != null){
-      data!.value = newValue;
-      notifyListeners();
-    }
+    data.value = newValue;
+    notifyListeners();
   }
-  
-  void setDeviceData(Device data){
+
+  void setDeviceData(Device data) {
     this.data = data;
     notifyListeners();
   }
 
-  // todo also name
+  void successLogin() {
+    isLoggedIn = 2;
+    notifyListeners();
+  }
+
+  void loginFailed() {
+    isLoggedIn = 3;
+    notifyListeners();
+  }
+
+  void startLogining() {
+    isLoggedIn = 1;
+    notifyListeners();
+  }
+
   void silentSetId(String id) {
-    Device d = Device("name${Random().nextInt(100)}", id, "value", true);
+    Device d = Device("name${Random().nextInt(100)}", id, "value");
     data = d;
   }
 }
@@ -27,16 +41,22 @@ class DeviceData extends ChangeNotifier {
 class UserData extends ChangeNotifier {
   List<Device> devices = <Device>[];
   String? userName;
-  int isLoggedIn = 0; //0 - now inactive; 1 - in process; 2 - success; 3 - failure;
+  int isLoggedIn =
+      0; //0 - now inactive; 1 - in process; 2 - success; 3 - failure;
 
   void updateValue(String deviceId, String newValue) {
-    for (Device d in devices){
+    for (Device d in devices) {
       if (d.id == deviceId) {
         d.value = newValue;
         notifyListeners();
         return;
       }
     }
+  }
+
+  void setDevices(List<Device> l) {
+    devices = l;
+    notifyListeners();
   }
 
   void successLogin() {
@@ -64,7 +84,6 @@ class Device {
   String name;
   String id;
   String value;
-  bool isEnabled;
 
-  Device(this.name, this.id, this.value, this.isEnabled);
+  Device(this.name, this.id, this.value);
 }

@@ -211,10 +211,11 @@ class _SignupPageWidgetState extends State<SignupPageWidget> {
                       if (data.isLoggedIn == 2) {
                         data.isLoggedIn = 0;
                         Future.microtask(() =>
-                            Navigator.pushNamed(context, '/devices-list'));
+                            Navigator.pushReplacementNamed(context, '/devices-list'));
                       }
                       if (data.isLoggedIn == 3) {
-                        Future.microtask(() =>ScaffoldMessenger.of(context).showSnackBar(snackBar));
+                        Future.microtask(() => ScaffoldMessenger.of(context)
+                            .showSnackBar(snackBar));
                         data.isLoggedIn = 0;
                       }
                       return ElevatedButton(

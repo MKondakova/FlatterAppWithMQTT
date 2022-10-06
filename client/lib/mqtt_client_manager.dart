@@ -10,7 +10,6 @@ import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
-
 class MQTTClientManager {
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   MqttServerClient client = MqttServerClient.withPort(
@@ -57,8 +56,21 @@ class MQTTClientManager {
           }
         }
 
-        if (m.topic == 'sensor/create/${deviceData?.data!.id}') {
-          changeState(deviceData!.data!.value);
+        if (m.topic == 'sensor/create/${deviceData?.data.id}') {
+          L.log(content);
+          if (content == 'success') {
+            deviceData!.successLogin();
+          } else {
+            deviceData!.loginFailed();
+          }
+        }
+
+        if (m.topic == 'client/login/${userData?.userName}') {
+          if (content == 'success') {
+            userData!.successLogin();
+          } else {
+            userData!.loginFailed();
+          }
         }
 
         if (m.topic == 'sensor/${deviceData?.data!.id}') {
@@ -68,7 +80,20 @@ class MQTTClientManager {
 
         if (m.topic == 'client/${userData?.userName}') {
           Map<String, dynamic> data = jsonDecode(content);
-          userData!.updateValue(data['guid'], data['state']);
+          userData!
+              .updateValue(data['guid'].toString(), data['state'].toString());
+        }
+
+        if (m.topic == 'client/subscriptions/${userData?.userName}') {
+          List<dynamic> data = jsonDecode(content);
+          List<Device> devices = <Device>[];
+          for (Map<String, dynamic> d in data) {
+            Map<String, dynamic> sensor = d['sensor'];
+            Device device = Device(d['title'].toString(),
+                sensor['guid'].toString(), sensor['state']);
+            devices.add(device);
+          }
+          userData!.setDevices(devices);
         }
       }
     });
@@ -125,6 +150,17 @@ class MQTTClientManager {
     publishMessage('client/create', MqttQos.atLeastOnce, message);
   }
 
+  void loginUser(String login, String password) {
+    String message = json.encode({"username": login, "password": password});
+    Subscription? resultSubscription = subscribe('client/login/$login');
+    if (resultSubscription == null) {
+      throw Exception('Something went wrong with subscription');
+    }
+    userData!.silentSetName(login);
+    userData!.startLogining();
+    publishMessage('client/login', MqttQos.atLeastOnce, message);
+  }
+
   Future<void> registerDevice() async {
     final SharedPreferences prefs = await _prefs;
     String? uuid = prefs.getString('uuid');
@@ -134,33 +170,39 @@ class MQTTClientManager {
     }
     deviceData!.silentSetId(uuid);
     String message = json.encode(
-        {"guid": deviceData!.data!.id, "title": deviceData!.data!.name});
+        {"guid": deviceData!.data.id});
 
     Subscription? resultSubscription = subscribe('sensor/create/$uuid');
     if (resultSubscription == null) {
       throw Exception('Something went wrong with subscription');
     }
+    deviceData!.startLogining();
     publishMessage('sensor/create', MqttQos.atLeastOnce, message);
   }
 
   // to device
   void giveAnOrder(String uuid, String newState) {
-    String message = json.encode({'state': newState});
-    publishMessage('sensor/$uuid', MqttQos.atLeastOnce, message);
+    String message = json.encode({'guid': uuid, 'state': newState});
+    publishMessage('sensor/update', MqttQos.atLeastOnce, message);
   }
 
   void updateDevices() {
-    /* посылаем запрос в топик client/---
-    * ждем ответа в виде списка devises (в json)
-    * когда он приходит, сохраняем в sharedPrefs
-    * и возвращаем, разрешая future */
+    String message = json.encode({'username': userData!.userName!});
+    subscribe('client/subscriptions/${userData?.userName}');
+    publishMessage('client/subscriptions', MqttQos.atLeastOnce, message);
+  }
+
+  void subscribeOnDevice(String name, String uuid) {
+    String message = json.encode(
+        {'sensorGuid': uuid, 'title': name, 'username': userData!.userName!});
+    publishMessage('client/subscribe', MqttQos.atLeastOnce, message);
   }
 
   Future<void> changeState(String newState) async {
     final SharedPreferences prefs = await _prefs;
     final String uuid = prefs.getString('uuid')!;
-    String message = json.encode({'state': newState});
-    publishMessage('sensor/$uuid', MqttQos.atLeastOnce, message);
+    String message = json.encode({'guid': uuid, 'state': newState});
+    publishMessage('sensor/update', MqttQos.atLeastOnce, message);
   }
 
   Stream<List<MqttReceivedMessage<MqttMessage>>>? getMessagesStream() {
