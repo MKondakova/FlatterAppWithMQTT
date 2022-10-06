@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Sensor } from '../sensor.entity';
-import { SensorCreateDto, SensorUpdateDto } from '../dto';
+import { SensorUpdateDto } from '../dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PublishMessageService } from '../../mqtt';
@@ -24,6 +24,8 @@ export class UpdateSensorStateService {
         state: data.state
     });
 
-     sensor.clients.forEach(c => this.publishMessageService.execute({topic: `client/${c.username}`, payload: data.state}))
+     sensor.clients.forEach(c => this.publishMessageService.execute({topic: `client/${c.username}`, payload: JSON.stringify(data)}))
+     this.publishMessageService.execute({topic: `sensor/${sensor.guid}`, payload: JSON.stringify(data)})
+     
   }
 }

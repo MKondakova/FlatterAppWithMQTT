@@ -1,14 +1,15 @@
-import { CreateClientService, LoginClientService } from './services';
+import { CreateClientService, LoginClientService, SubscribeClientService } from './services';
 
 import { Client } from './client.entity';
 import { ClientController } from './controllers';
 import { Module } from '@nestjs/common';
 import { MqttModule } from '../mqtt';
+import { Sensor } from '@/sensor/sensor.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [MqttModule, TypeOrmModule.forFeature([Client])],
-  providers: [CreateClientService, LoginClientService],
+  imports: [MqttModule, TypeOrmModule.forFeature([Client]), TypeOrmModule.forFeature([Sensor])],
+  providers: [CreateClientService, LoginClientService, SubscribeClientService],
   controllers: [ClientController],
 })
 export class ClientModule {}

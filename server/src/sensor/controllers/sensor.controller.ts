@@ -15,7 +15,7 @@ export class SensorController {
     await this.createSensorService.execute(data);
   }
 
-  @MessagePattern('sensor')
+  @MessagePattern('sensor/update')
   async updateSensor(data: SensorUpdateDto) {
     await this.updateSensorService.execute(data);
   }
