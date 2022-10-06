@@ -73,7 +73,7 @@ class MQTTClientManager {
           }
         }
 
-        if (m.topic == 'sensor/${deviceData?.data!.id}') {
+        if (m.topic == 'sensor/${deviceData?.data.id}') {
           Map<String, dynamic> data = jsonDecode(content);
           deviceData!.setValue(data['state']);
         }
@@ -189,6 +189,7 @@ class MQTTClientManager {
   void updateDevices() {
     String message = json.encode({'username': userData!.userName!});
     subscribe('client/subscriptions/${userData?.userName}');
+    subscribe('client/${userData?.userName}');
     publishMessage('client/subscriptions', MqttQos.atLeastOnce, message);
   }
 

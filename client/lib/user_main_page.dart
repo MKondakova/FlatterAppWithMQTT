@@ -12,7 +12,6 @@ class DevicesList extends StatefulWidget {
 }
 
 class _DevicesListState extends State<DevicesList> {
-
   late MQTTClientManager mqtt;
 
   @override
@@ -26,6 +25,41 @@ class _DevicesListState extends State<DevicesList> {
   void dispose() {
     mqtt.disconnect();
     super.dispose();
+  }
+
+  Future<void> _displayTextInputDialog(
+      BuildContext context, String uuid, String oldVal) async {
+    String value = "";
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Enter a value'),
+            content: TextField(
+              decoration: InputDecoration(labelText: oldVal),
+              onChanged: (v) {
+                setState(() {
+                  value = v;
+                });
+              },
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('CANCEL'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  mqtt.giveAnOrder(uuid, value);
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        });
   }
 
   @override
@@ -70,10 +104,15 @@ class _DevicesListState extends State<DevicesList> {
                     clipBehavior: Clip.antiAlias,
                     child: ListTile(
                       title: Text(item.name),
-                      trailing: Text(item.value.isNotEmpty ? item.value[0] : '',
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                              fontSize: 24, color: Colors.black)),
+                      trailing: TextButton(
+                        onPressed: () {
+                          _displayTextInputDialog(context, item.id, item.value);
+                        },
+                        child: Text(item.value.isNotEmpty ? item.value[0] : '',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                                fontSize: 24, color: Colors.black)),
+                      ),
                     ));
               },
             );
