@@ -10,14 +10,22 @@ export class CreateSensorService {
   public constructor(
     private readonly publishMessageService: PublishMessageService,
     @InjectRepository(Sensor)
-    private clientRepository: Repository<Sensor>,
+    private sensorRepository: Repository<Sensor>,
   ) {}
 
   public async execute(data: SensorCreateDto) {
-    await this.clientRepository.save(data);
+    const existingSensor = await this.sensorRepository.findOne({'guid': data.guid});
+    if (existingSensor) {
+      this.publishMessageService.execute({
+        topic: `sensor/create/${data.guid}`,
+        payload: 'success',
+      });
+      throw new Error('Sensor exists')
+    }
+    await this.sensorRepository.save(data);
     this.publishMessageService.execute({
       topic: `sensor/create/${data.guid}`,
-      payload: data.guid,
+      payload: 'success',
     });
   }
 }
