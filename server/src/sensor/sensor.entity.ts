@@ -13,6 +13,11 @@ export class Sensor {
   @Column('text')
   public title: string;
 
+  @Column('text', {
+    default: ''
+  })
+  public data: string;
+
   @ManyToMany(() => Client, (client) => client.sensors)
   public clients: Client[];
 }
