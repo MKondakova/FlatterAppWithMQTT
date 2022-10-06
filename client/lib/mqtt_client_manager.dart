@@ -50,8 +50,11 @@ class MQTTClientManager {
             MqttPublishPayload.bytesToStringAsString(payload.payload.message);
 
         if (m.topic == 'client/create/${userData?.userName}') {
-          //todo check what message
-          userData!.successLogin();
+          if (content == 'success') {
+            userData!.successLogin();
+          } else {
+            userData!.loginFailed();
+          }
         }
 
         if (m.topic == 'sensor/create/${deviceData?.data!.id}') {

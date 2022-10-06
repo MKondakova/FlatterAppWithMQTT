@@ -68,7 +68,6 @@ class _SignupPageWidgetState extends State<SignupPageWidget> {
     super.dispose();
   }
 
-
   var isLoginIconVisible = false;
   var isPasswordIconVisible = false;
   var isPasswordAgainIconVisible = false;
@@ -102,7 +101,7 @@ class _SignupPageWidgetState extends State<SignupPageWidget> {
           Container(
               alignment: Alignment.centerLeft,
               margin:
-              const EdgeInsets.symmetric(vertical: 80.0, horizontal: 20.0),
+                  const EdgeInsets.symmetric(vertical: 80.0, horizontal: 20.0),
               child: const Text(
                 'Welcome!',
                 style: TextStyle(
@@ -136,9 +135,9 @@ class _SignupPageWidgetState extends State<SignupPageWidget> {
                       labelText: 'Login',
                       suffixIcon: isLoginIconVisible
                           ? IconButton(
-                        icon: const Icon(Icons.cancel_outlined),
-                        onPressed: _loginController.clear,
-                      )
+                              icon: const Icon(Icons.cancel_outlined),
+                              onPressed: _loginController.clear,
+                            )
                           : null,
                     ),
                   ),
@@ -166,9 +165,9 @@ class _SignupPageWidgetState extends State<SignupPageWidget> {
                       labelText: 'Password',
                       suffixIcon: isPasswordIconVisible
                           ? IconButton(
-                        icon: const Icon(Icons.cancel_outlined),
-                        onPressed: _passwordController.clear,
-                      )
+                              icon: const Icon(Icons.cancel_outlined),
+                              onPressed: _passwordController.clear,
+                            )
                           : null,
                     ),
                   ),
@@ -197,9 +196,9 @@ class _SignupPageWidgetState extends State<SignupPageWidget> {
                       labelText: 'Password again',
                       suffixIcon: isPasswordAgainIconVisible
                           ? IconButton(
-                        icon: const Icon(Icons.cancel_outlined),
-                        onPressed: _passwordAgainController.clear,
-                      )
+                              icon: const Icon(Icons.cancel_outlined),
+                              onPressed: _passwordAgainController.clear,
+                            )
                           : null,
                     ),
                   ),
@@ -208,27 +207,25 @@ class _SignupPageWidgetState extends State<SignupPageWidget> {
                     width: double.infinity,
                     height: 50,
                     margin: const EdgeInsets.all(10),
-                    child: Consumer<UserData>(
-                      builder: (context, data, child) {
-                        if (data.isLoggedIn == 2) {
-                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                          data.isLoggedIn = 0;
-                          Navigator.pushNamed(context, '/devices-list');
-                        }
-                        if (data.isLoggedIn == 3) {
-                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                          data.isLoggedIn = 0;
-                        }
-                        return ElevatedButton(
-                          onPressed: data.isLoggedIn == 0 ? _validateForm : null,
-                          child: Text(
-                            data.isLoggedIn == 0 ? 'Sign Up' : 'Wait...',
-                            style: const TextStyle(
-                                fontWeight: FontWeight.w500, fontSize: 18),
-                          ),
-                        );}
-                    )),
+                    child: Consumer<UserData>(builder: (context, data, child) {
+                      if (data.isLoggedIn == 2) {
+                        data.isLoggedIn = 0;
+                        Future.microtask(() =>
+                            Navigator.pushNamed(context, '/devices-list'));
+                      }
+                      if (data.isLoggedIn == 3) {
+                        Future.microtask(() =>ScaffoldMessenger.of(context).showSnackBar(snackBar));
+                        data.isLoggedIn = 0;
+                      }
+                      return ElevatedButton(
+                        onPressed: data.isLoggedIn == 0 ? _validateForm : null,
+                        child: Text(
+                          data.isLoggedIn == 0 ? 'Sign Up' : 'Wait...',
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w500, fontSize: 18),
+                        ),
+                      );
+                    })),
               ],
             ),
           )
