@@ -100,8 +100,11 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                   child: FormBuilderTextField(
                     name: 'login',
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Enter login';
+                      if (value == null ||
+                          value.isEmpty ||
+                          value.length > 8 ||
+                          value.length < 2) {
+                        return 'Enter login and 2 <= length <= 8 symbols';
                       }
                       return null;
                     },
@@ -130,8 +133,11 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                     name: 'password',
                     obscureText: true,
                     validator: (value) {
-                      if (value == null || value.isEmpty || value.length < 8) {
-                        return 'Password must contains at least 8 symbols';
+                      if (value == null ||
+                          value.isEmpty ||
+                          value.length > 8 ||
+                          value.length < 2) {
+                        return 'Password must contains 2 <= length <= 8 symbols';
                       }
                       return null;
                     },

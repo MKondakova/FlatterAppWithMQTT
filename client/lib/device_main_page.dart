@@ -19,7 +19,7 @@ class _DeviceMainPageState extends State<DeviceMainPage> {
   void initState() {
     super.initState();
     mqtt = MQTTClientManager();
-    mqtt.connect();
+    mqtt.connect().whenComplete(() => mqtt.changeState("!"));
   }
 
   @override

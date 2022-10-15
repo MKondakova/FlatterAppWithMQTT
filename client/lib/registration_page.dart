@@ -148,8 +148,11 @@ class _SignupPageWidgetState extends State<SignupPageWidget> {
                     name: 'password',
                     obscureText: true,
                     validator: (value) {
-                      if (value == null || value.isEmpty || value.length < 8) {
-                        return 'Password must contains at least 8 symbols';
+                      if (value == null ||
+                          value.isEmpty ||
+                          value.length > 8 ||
+                          value.length < 2) {
+                        return 'Password must contains 2 <= length <= 8 symbols';
                       }
                       return null;
                     },
@@ -186,8 +189,11 @@ class _SignupPageWidgetState extends State<SignupPageWidget> {
                           ?.validate();
                     },
                     validator: (value) {
-                      if (value == null || value.isEmpty || value.length < 8) {
-                        return 'Password must contains at least 8 symbols';
+                      if (value == null ||
+                          value.isEmpty ||
+                          value.length > 8 ||
+                          value.length < 2) {
+                        return 'Password must contains 2 <= length <= 8 symbols';
                       }
                       return null;
                     },
@@ -210,8 +216,8 @@ class _SignupPageWidgetState extends State<SignupPageWidget> {
                     child: Consumer<UserData>(builder: (context, data, child) {
                       if (data.isLoggedIn == 2) {
                         data.isLoggedIn = 0;
-                        Future.microtask(() =>
-                            Navigator.pushReplacementNamed(context, '/devices-list'));
+                        Future.microtask(() => Navigator.pushReplacementNamed(
+                            context, '/devices-list'));
                       }
                       if (data.isLoggedIn == 3) {
                         Future.microtask(() => ScaffoldMessenger.of(context)

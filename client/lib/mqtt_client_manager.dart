@@ -13,7 +13,7 @@ import 'package:uuid/uuid.dart';
 class MQTTClientManager {
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   MqttServerClient client = MqttServerClient.withPort(
-      '192.168.0.14', 'mobile_client${Random().nextInt(1000)}', 1883);
+      '192.168.43.113', 'mobile_client${Random().nextInt(1000)}', 1883);
 
   final clientBuilder = MqttClientPayloadBuilder();
   UserData? userData;
@@ -39,6 +39,7 @@ class MQTTClientManager {
     } on SocketException catch (e) {
       L.log('MQTT :: socket exception - $e');
       client.disconnect();
+      return 2;
     }
     L.log('MQTT :: Connected...');
     client.updates!.listen((List<MqttReceivedMessage<MqttMessage>> c) {
@@ -75,6 +76,7 @@ class MQTTClientManager {
 
         if (m.topic == 'sensor/${deviceData?.data.id}') {
           Map<String, dynamic> data = jsonDecode(content);
+          L.log(data['state']);
           deviceData!.setValue(data['state']);
         }
 
@@ -197,11 +199,13 @@ class MQTTClientManager {
     String message = json.encode(
         {'sensorGuid': uuid, 'title': name, 'username': userData!.userName!});
     publishMessage('client/subscribe', MqttQos.atLeastOnce, message);
+    updateDevices();
   }
 
   Future<void> changeState(String newState) async {
     final SharedPreferences prefs = await _prefs;
     final String uuid = prefs.getString('uuid')!;
+    subscribe('sensor/${deviceData?.data.id}');
     String message = json.encode({'guid': uuid, 'state': newState});
     publishMessage('sensor/update', MqttQos.atLeastOnce, message);
   }

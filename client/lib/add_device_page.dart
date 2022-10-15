@@ -51,7 +51,7 @@ class _AddDevicePageWidget extends State<AddDevicePageWidget> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState?.save();
       mqtt.subscribeOnDevice(_formKey.currentState!.fields['name']!.value,
-      _formKey.currentState!.fields['id']!.value);
+          _formKey.currentState!.fields['id']!.value);
     }
   }
 
@@ -141,7 +141,10 @@ class _AddDevicePageWidget extends State<AddDevicePageWidget> {
                     height: 50,
                     margin: const EdgeInsets.all(10),
                     child: ElevatedButton(
-                      onPressed: _validateForm,
+                      onPressed: () {
+                        _validateForm();
+                        Navigator.pop(context);
+                      },
                       child: const Text(
                         'Add Device',
                         style: TextStyle(
